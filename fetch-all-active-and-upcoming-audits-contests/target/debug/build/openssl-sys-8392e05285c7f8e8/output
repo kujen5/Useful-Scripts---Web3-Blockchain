@@ -134,7 +134,7 @@ cargo:rerun-if-env-changed=CFLAGS_x86_64_unknown_linux_gnu
 CFLAGS_x86_64_unknown_linux_gnu = None
 cargo:rerun-if-env-changed=CFLAGS_x86_64-unknown-linux-gnu
 CFLAGS_x86_64-unknown-linux-gnu = None
-version: 3_0_13
+version: 3_0_2
 cargo:rustc-cfg=osslconf="OPENSSL_NO_IDEA"
 cargo:rustc-cfg=osslconf="OPENSSL_NO_SSL3_METHOD"
 cargo:conf=OPENSSL_NO_IDEA,OPENSSL_NO_SSL3_METHOD
@@ -152,5 +152,5 @@ cargo:rustc-cfg=ossl111b
 cargo:rustc-cfg=ossl111c
 cargo:rustc-cfg=ossl111d
 cargo:rustc-cfg=ossl300
-cargo:version_number=300000d0
+cargo:version_number=30000020
 cargo:include=/usr/include
