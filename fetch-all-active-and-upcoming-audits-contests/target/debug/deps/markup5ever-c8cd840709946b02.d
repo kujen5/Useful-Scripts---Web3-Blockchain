@@ -1,0 +1,10 @@
+/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/deps/markup5ever-c8cd840709946b02.d: /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/lib.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/interface/mod.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/interface/tree_builder.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/serialize.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/util/buffer_queue.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/util/smallcharset.rs
+
+/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/deps/libmarkup5ever-c8cd840709946b02.rmeta: /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/lib.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/interface/mod.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/interface/tree_builder.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/serialize.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/util/buffer_queue.rs /home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/util/smallcharset.rs
+
+/home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/lib.rs:
+/home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/interface/mod.rs:
+/home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/interface/tree_builder.rs:
+/home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/serialize.rs:
+/home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/util/buffer_queue.rs:
+/home/kujen/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/markup5ever-0.35.0/util/smallcharset.rs:

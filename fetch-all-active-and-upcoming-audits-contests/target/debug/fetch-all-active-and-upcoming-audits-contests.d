@@ -1,0 +1,1 @@
+/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/fetch-all-active-and-upcoming-audits-contests: /home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/main.rs
