@@ -3,6 +3,14 @@ name = "fetch-all-active-and-upcoming-audits-contests"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "immunefi"
+path = "src/immunefi.rs"
+
+[[bin]]
+name = "cantina"
+path = "src/cantina.rs"
+
 [dependencies]
 anyhow = "1.0.100"
 chrono = "0.4.42"
