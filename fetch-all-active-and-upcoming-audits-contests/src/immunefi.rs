@@ -11,8 +11,8 @@ use std::fs;
 use std::io::{BufWriter, Write};
 use chrono::Utc;
 
-const DATA_FILE: &str = "immunefi_programs.json";
-const CHANGELOG_FILE: &str = "immunefi-changelog.md";
+const DATA_FILE: &str = "immunefi/immunefi_programs.json";
+const CHANGELOG_FILE: &str = "immunefi/immunefi-changelog.md";
 
 #[derive(Deserialize, Debug)]
 struct ListData {
@@ -342,7 +342,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         print_scope(prog);
         println!("---\n");
     }
-
+    println!("Visualize the json on -->  https://jsontotable.org/");
     Ok(())
 }
 

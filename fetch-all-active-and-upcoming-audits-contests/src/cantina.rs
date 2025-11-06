@@ -9,8 +9,8 @@ use std::fs;
 use std::io::{BufWriter, Write};
 use std::error::Error;
 
-const DATA_FILE: &str = "cantina_opportunities.json";
-const CHANGELOG_FILE: &str = "cantina-changelog.md";
+const DATA_FILE: &str = "cantina/cantina_opportunities.json";
+const CHANGELOG_FILE: &str = "cantina/cantina-changelog.md";
 
 #[derive(Deserialize, Debug, Clone)]
 struct Resp {
@@ -189,7 +189,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         println!("No changes detected.");
     }
-
+    println!("Visualize the json on -->  https://jsontotable.org/");
     Ok(())
 }
 
