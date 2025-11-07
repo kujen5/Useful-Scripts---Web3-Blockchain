@@ -216,11 +216,13 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "percent-encoding",
  "reqwest",
  "scraper",
  "serde",
  "serde_json",
  "tokio",
+ "url",
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
 //! Immunefi Scraper – Scope + Rewards + JSON + Smart Changelog
-//! Run: cargo run --bin immunefi
-//! Output: immunefi_programs.json + immunefi-changelog.md (only if changed)
+//! Run: cargo run --bin immunefi -- <URL>
+//!   e.g. cargo run --bin immunefi -- "https://immunefi.com/bug-bounty/?filter=language%3DRust%26projectType%3DDefi&sort=vaultBalance%3Adesc"
+//! Output: immunefi/immunefi_programs.json + immunefi-changelog.md (only if changed)
 
 use reqwest::blocking::get;
 use scraper::{Html, Selector};
@@ -10,10 +11,84 @@ use std::error::Error;
 use std::fs;
 use std::io::{BufWriter, Write};
 use chrono::Utc;
+use url::Url;
 
-const DATA_FILE: &str = "immunefi/immunefi_programs.json";
-const CHANGELOG_FILE: &str = "immunefi/immunefi-changelog.md";
+/// ---------------------------------------------------------------------------
+/// CLI – accept the list URL as the first argument (fallback to default)
+/// ---------------------------------------------------------------------------
+fn get_list_url() -> String {
+    std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| {
+            // Default: all programs, newest first
+            "https://immunefi.com/bug-bounty/?sort=createdAt%3Adesc".to_string()
+        })
+}
 
+/// ---------------------------------------------------------------------------
+/// Parse the `filter=` query string into a map of filter-key → required-value
+/// Example: filter=language%3DRust%26projectType%3DDefi
+///          → { "language": "Rust", "projectType": "Defi" }
+/// ---------------------------------------------------------------------------
+fn parse_filters(url: &str) -> HashMap<String, String> {
+    let mut filters = HashMap::new();
+
+    if let Ok(parsed) = Url::parse(url) {
+        if let Some(query) = parsed.query() {
+            for pair in query.split('&') {
+                if pair.starts_with("filter=") {
+                    let filter_str = &pair[7..]; // strip "filter="
+                    for kv in filter_str.split("%26") {
+    if let Some((k, v)) = kv.split_once("%3D") {
+        if let Ok(key) = percent_encoding::percent_decode_str(k).decode_utf8() {
+            if let Ok(val) = percent_encoding::percent_decode_str(v).decode_utf8() {
+                filters.insert(key.into_owned(), val.into_owned());
+            }
+        }
+    }
+}
+                }
+            }
+        }
+    }
+    filters
+}
+
+/// ---------------------------------------------------------------------------
+/// Decide if a program matches **all** filters that were present in the URL
+/// ---------------------------------------------------------------------------
+fn matches_filter(tags: &Tags, url_filters: &HashMap<String, String>) -> bool {
+    // language → tags.language
+    if let Some(want) = url_filters.get("language") {
+        if !tags.language.iter().any(|l| l == want) {
+            return false;
+        }
+    }
+    // projectType → tags.project_type
+    if let Some(want) = url_filters.get("projectType") {
+        if !tags.project_type.iter().any(|t| t == want) {
+            return false;
+        }
+    }
+    // programType → tags.program_type
+    if let Some(want) = url_filters.get("programType") {
+        if !tags.program_type.iter().any(|t| t == want) {
+            return false;
+        }
+    }
+    // productType → tags.product_type
+    if let Some(want) = url_filters.get("productType") {
+        if !tags.product_type.iter().any(|t| t == want) {
+            return false;
+        }
+    }
+    // …add more mappings here if Immunefi adds new filter keys
+    true
+}
+
+/// ---------------------------------------------------------------------------
+/// Rest of the original structs (unchanged)
+/// ---------------------------------------------------------------------------
 #[derive(Deserialize, Debug)]
 struct ListData {
     props: ListProps,
@@ -77,7 +152,6 @@ struct Asset {
     url: String,
     description: Option<String>,
 }
-
 #[derive(Deserialize, Debug)]
 struct Reward {
     severity: String,
@@ -88,7 +162,6 @@ struct Reward {
     #[serde(rename = "rewardModel")]
     reward_model: String,
 }
-
 #[derive(Deserialize, Debug)]
 struct LegacyRewards {
     #[serde(rename = "smartcontract_rewards")]
@@ -96,7 +169,6 @@ struct LegacyRewards {
     #[serde(rename = "web_rewards")]
     web: Option<Vec<LegacyReward>>,
 }
-
 #[derive(Deserialize, Debug)]
 struct LegacyReward {
     level: String,
@@ -137,23 +209,39 @@ struct Program {
     has_web_scope: bool,
 }
 
+// ---------------------------------------------------------------------------
+// MAIN
+// ---------------------------------------------------------------------------
 fn main() -> Result<(), Box<dyn Error>> {
-    // === Ensure files exist on first run ===
+    // Files
     if fs::metadata(DATA_FILE).is_err() {
         fs::write(DATA_FILE, "[]")?;
         println!("Created empty {}", DATA_FILE);
     }
     if fs::metadata(CHANGELOG_FILE).is_err() {
-        let mut file = fs::File::create(CHANGELOG_FILE)?;
-        writeln!(file, "# Immunefi Bug Bounty Changelog")?;
-        writeln!(file, "> Auto-generated by immunefi-scraper\n")?;
+        let mut f = fs::File::create(CHANGELOG_FILE)?;
+        writeln!(f, "# Immunefi Bug Bounty Changelog")?;
+        writeln!(f, "> Auto-generated by immunefi-scraper\n")?;
         println!("Created {}", CHANGELOG_FILE);
     }
 
-    let list_url = "https://immunefi.com/bug-bounty/?filter=language%3DSolidity%26projectType%3DDefi%26productType%3DStablecoin&sort=maximum_reward%3Aasc";
-    let body = get(list_url)?.text()?;
-    let doc = Html::parse_document(&body);
+    // -------------------------------------------------------------------
+    // 1. URL + FILTERS
+    // -------------------------------------------------------------------
+    let list_url = get_list_url();
+    let url_filters = parse_filters(&list_url);
+    println!("Using list URL: {}", list_url);
+    if !url_filters.is_empty() {
+        println!("Active filters: {:?}", url_filters);
+    } else {
+        println!("No filters in URL – will include **all** programs.");
+    }
 
+    // -------------------------------------------------------------------
+    // 2. FETCH LIST PAGE
+    // -------------------------------------------------------------------
+    let body = get(&list_url)?.text()?;
+    let doc = Html::parse_document(&body);
     let script_sel = Selector::parse(r#"script[id="__NEXT_DATA__"]"#).unwrap();
     let script = doc.select(&script_sel).next().ok_or("No __NEXT_DATA__")?;
     let json_text = script.inner_html();
@@ -168,8 +256,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut programs = Vec::new();
 
+    println!("Found {} programs on list page.", list_data.props.page_props.bounties.len());
+
     for bounty in &list_data.props.page_props.bounties {
-        if !matches_filter(&bounty.tags) {
+        // -----------------------------------------------------------
+        // FILTER USING URL FILTERS
+        // -----------------------------------------------------------
+        if !matches_filter(&bounty.tags, &url_filters) {
             continue;
         }
 
@@ -187,16 +280,20 @@ fn main() -> Result<(), Box<dyn Error>> {
             ..Default::default()
         };
 
+        // -----------------------------------------------------------
+        // FETCH DETAIL PAGE (with error handling)
+        // -----------------------------------------------------------
         if let Ok(detail_json) = fetch_detail_json(&detail_url) {
             let bounty_detail = &detail_json.props.page_props.bounty;
 
-            // Scope
+            // ----- Scope -----
             for asset in &bounty_detail.assets {
                 if !["smart_contract", "web"].contains(&asset.asset_type.as_str()) {
                     continue;
                 }
-
-                let line = asset.description.as_ref()
+                let line = asset
+                    .description
+                    .as_ref()
                     .and_then(|d| if d.trim().is_empty() { None } else { Some(d.trim().to_string()) })
                     .map(|d| format!("{} -> {}", d, asset.url))
                     .unwrap_or(asset.url.clone());
@@ -217,7 +314,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
             }
 
-            // Rewards
+            // ----- Rewards -----
             if let Some(legacy) = &bounty_detail.legacy {
                 if let Some(sc) = &legacy.smart_contract {
                     for r in sc {
@@ -253,8 +350,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                     }
                 }
             }
+        } else {
+            eprintln!("Failed to fetch detail for {} ({})", p.name, detail_url);
         }
 
+        // -----------------------------------------------------------
+        // Build final output + diff
+        // -----------------------------------------------------------
         let output = ProgramOutput {
             id: p.id.clone(),
             name: p.name.clone(),
@@ -271,7 +373,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             last_updated: now.clone(),
         };
 
-        // Diff and log changes
         let changes = diff_program(&p.id, &previous, &output, &default_reward);
         if !changes.is_empty() {
             let header = format!("## [{}] {} (`{}`)", now, p.name, p.id);
@@ -283,23 +384,23 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if programs.is_empty() {
-        println!("No programs match filters.");
+        println!("No programs matched the filters from the URL.");
         return Ok(());
     }
 
-    // Sort by max bounty
+    // -----------------------------------------------------------
+    // Sort + JSON export
+    // -----------------------------------------------------------
     programs.sort_by_key(|p| parse_amount(&p.max_bounty));
 
-    // === Export JSON only if changed ===
     let new_json_vec: Vec<_> = current_map.values().cloned().collect();
     let new_json_str = serde_json::to_string_pretty(&new_json_vec)?;
 
-    let json_changed = if fs::metadata(DATA_FILE).is_ok() {
-        let old_json = fs::read_to_string(DATA_FILE)?;
-        old_json != new_json_str
-    } else {
-        true
-    };
+    let json_changed = fs::metadata(DATA_FILE).is_ok_and(|m| {
+        fs::read_to_string(DATA_FILE)
+            .map(|old| old != new_json_str)
+            .unwrap_or(true)
+    });
 
     if json_changed {
         fs::write(DATA_FILE, &new_json_str)?;
@@ -308,17 +409,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("No changes in data. {} unchanged.", DATA_FILE);
     }
 
-    // === Write Changelog (with robust error handling) ===
+    // -----------------------------------------------------------
+    // Changelog
+    // -----------------------------------------------------------
     if !changelog_entries.is_empty() {
         let file = fs::OpenOptions::new()
             .write(true)
             .append(true)
             .create(true)
             .open(CHANGELOG_FILE)?;
-
         let mut writer = BufWriter::new(file);
 
-        // Add header only if file was empty
         if fs::metadata(CHANGELOG_FILE)?.len() == 0 {
             writeln!(writer, "# Immunefi Bug Bounty Changelog")?;
             writeln!(writer, "> Auto-generated by immunefi-scraper\n")?;
@@ -327,28 +428,29 @@ fn main() -> Result<(), Box<dyn Error>> {
         for entry in &changelog_entries {
             writeln!(writer, "{}\n", entry)?;
         }
-
         writer.flush()?;
         println!("{} change(s) logged to {}", changelog_entries.len(), CHANGELOG_FILE);
     } else {
         println!("No changes detected.");
     }
 
-    // === Console Output ===
-    println!("=== IMMUNEFI BOUNTY PROGRAMS ({})\n", programs.len());
+    // -----------------------------------------------------------
+    // Console summary
+    // -----------------------------------------------------------
+    println!("=== IMMUNEFI PROGRAMS MATCHING URL FILTERS ({})\n", programs.len());
     for prog in &programs {
         print_summary(prog);
         print_rewards(prog);
         print_scope(prog);
         println!("---\n");
     }
-    println!("Visualize the json on -->  https://jsontotable.org/");
+    println!("Visualize the json → https://jsontotable.org/");
     Ok(())
 }
 
-// ---------------------------------------------------------------------
-// Diff Engine
-// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Diff, helpers, printing (unchanged from your original code)
+// ---------------------------------------------------------------------------
 fn diff_program(
     id: &str,
     previous: &HashMap<String, ProgramOutput>,
@@ -356,12 +458,11 @@ fn diff_program(
     default_reward: &String,
 ) -> Vec<String> {
     let mut changes = Vec::new();
-
     match previous.get(id) {
         Some(prev) => {
-            if prev.name != current.name { changes.push(format!("- **Name**: `{}` -> `{}`", prev.name, current.name)); }
-            if prev.max_bounty != current.max_bounty { changes.push(format!("- **Max Bounty**: `{}` -> `{}`", prev.max_bounty, current.max_bounty)); }
-            if prev.vault_tvl != current.vault_tvl { changes.push(format!("- **Vault TVL**: `{}` -> `{}`", prev.vault_tvl, current.vault_tvl)); }
+            if prev.name != current.name { changes.push(format!("- **Name**: `{}` → `{}`", prev.name, current.name)); }
+            if prev.max_bounty != current.max_bounty { changes.push(format!("- **Max Bounty**: `{}` → `{}`", prev.max_bounty, current.max_bounty)); }
+            if prev.vault_tvl != current.vault_tvl { changes.push(format!("- **Vault TVL**: `{}` → `{}`", prev.vault_tvl, current.vault_tvl)); }
 
             diff_rewards(&prev.smart_contract_bounties, &current.smart_contract_bounties, "Smart Contract", &mut changes, default_reward);
             diff_rewards(&prev.web_bounties, &current.web_bounties, "Web", &mut changes, default_reward);
@@ -371,38 +472,32 @@ fn diff_program(
             diff_vec(&prev.onchain_contracts, &current.onchain_contracts, "On-Chain Contract", &mut changes);
 
             if prev.has_web_scope != current.has_web_scope {
-                changes.push(format!("- **Web Scope**: {} -> {}", prev.has_web_scope, current.has_web_scope));
+                changes.push(format!("- **Web Scope**: {} → {}", prev.has_web_scope, current.has_web_scope));
             }
             if prev.has_github != current.has_github {
-                changes.push(format!("- **GitHub Scope**: {} -> {}", prev.has_github, current.has_github));
+                changes.push(format!("- **GitHub Scope**: {} → {}", prev.has_github, current.has_github));
             }
         }
-        None => {
-            changes.push("- **NEW PROGRAM ADDED**".to_string());
-        }
+        None => changes.push("- **NEW PROGRAM ADDED**".to_string()),
     }
-
     changes
 }
-
 fn diff_rewards(old: &HashMap<String, String>, new: &HashMap<String, String>, kind: &str, changes: &mut Vec<String>, default: &String) {
     for (sev, new_rew) in new {
         let old_rew = old.get(sev).unwrap_or(default);
         if old_rew != new_rew {
-            changes.push(format!("- **{} [{}]**: `{}` -> `{}`", kind, sev, old_rew, new_rew));
+            changes.push(format!("- **{} [{}]**: `{}` → `{}`", kind, sev, old_rew, new_rew));
         }
     }
     for sev in old.keys() {
         if !new.contains_key(sev) {
-            changes.push(format!("- **{} [{}]**: `{}` -> `removed`", kind, sev, old[sev]));
+            changes.push(format!("- **{} [{}]**: `{}` → `removed`", kind, sev, old[sev]));
         }
     }
 }
-
 fn diff_vec(old: &[String], new: &[String], kind: &str, changes: &mut Vec<String>) {
     let old_set: HashSet<_> = old.iter().collect();
     let new_set: HashSet<_> = new.iter().collect();
-
     for added in new_set.difference(&old_set) {
         changes.push(format!("- **New {}**: `{}`", kind, added));
     }
@@ -410,23 +505,11 @@ fn diff_vec(old: &[String], new: &[String], kind: &str, changes: &mut Vec<String
         changes.push(format!("- **Removed {}**: `{}`", kind, removed));
     }
 }
-
-// ---------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------
 fn load_previous_data() -> Result<HashMap<String, ProgramOutput>, Box<dyn Error>> {
     let content = fs::read_to_string(DATA_FILE)?;
     let vec: Vec<ProgramOutput> = serde_json::from_str(&content)?;
     Ok(vec.into_iter().map(|o| (o.id.clone(), o)).collect())
 }
-
-fn matches_filter(tags: &Tags) -> bool {
-    tags.language.iter().any(|l| l == "Solidity")
-        && tags.project_type.iter().any(|t| t == "Defi")
-        && tags.program_type.iter().any(|t| t == "Smart Contract")
-        && tags.product_type.iter().any(|t| t == "Stablecoin")
-}
-
 fn fetch_detail_json(url: &str) -> Result<DetailData, Box<dyn Error>> {
     let body = get(url)?.text()?;
     let doc = Html::parse_document(&body);
@@ -435,17 +518,11 @@ fn fetch_detail_json(url: &str) -> Result<DetailData, Box<dyn Error>> {
     let json_text = script.inner_html();
     Ok(serde_json::from_str(&json_text)?)
 }
-
 fn format_number(n: u64) -> String {
-    if n >= 1_000_000 {
-        format!("{}M", n / 1_000_000)
-    } else if n >= 1_000 {
-        format!("{}k", n / 1_000)
-    } else {
-        n.to_string()
-    }
+    if n >= 1_000_000 { format!("{}M", n / 1_000_000) }
+    else if n >= 1_000 { format!("{}k", n / 1_000) }
+    else { n.to_string() }
 }
-
 fn parse_amount(s: &str) -> i64 {
     let s = s.replace(['$', ','], "").to_lowercase();
     let num: f64 = s.chars()
@@ -453,15 +530,10 @@ fn parse_amount(s: &str) -> i64 {
         .collect::<String>()
         .parse()
         .unwrap_or(0.0);
-    if s.contains('m') {
-        (num * 1_000_000.0) as i64
-    } else if s.contains('k') {
-        (num * 1_000.0) as i64
-    } else {
-        num as i64
-    }
+    if s.contains('m') { (num * 1_000_000.0) as i64 }
+    else if s.contains('k') { (num * 1_000.0) as i64 }
+    else { num as i64 }
 }
-
 fn map_severity(s: &str) -> Option<&'static str> {
     match s.to_lowercase().as_str() {
         "critical" => Some("Critical"),
@@ -471,78 +543,56 @@ fn map_severity(s: &str) -> Option<&'static str> {
         _ => None,
     }
 }
-
-// ---------------------------------------------------------------------
-// Console Printing
-// ---------------------------------------------------------------------
 fn print_summary(p: &Program) {
     println!("Name: {}", p.name);
     println!("Max Bounty: {}", p.max_bounty);
     println!("Vault TVL: {}", p.vault_tvl);
     println!("Detail URL: {}", p.detail_url);
 }
-
 fn print_rewards(p: &Program) {
     let has_legacy = !p.smart_contract_rewards.is_empty() || !p.web_rewards.is_empty();
     let has_modern = !p.rewards.is_empty();
-
-    if !has_legacy && !has_modern {
-        println!("Rewards: Not specified");
-        return;
-    }
-
+    if !has_legacy && !has_modern { println!("Rewards: Not specified"); return; }
     if has_legacy {
         if !p.smart_contract_rewards.is_empty() {
             println!("Smart Contract Bounties:");
-            for sev in &["Critical", "High", "Medium", "Low"] {
-                if let Some(rew) = p.smart_contract_rewards.get(*sev) {
-                    println!("  {}: {}", sev, rew);
-                }
+            for sev in &["Critical","High","Medium","Low"] {
+                if let Some(r) = p.smart_contract_rewards.get(*sev) { println!("  {}: {}", sev, r); }
             }
         }
         if !p.web_rewards.is_empty() {
             println!("Websites & Applications Bounties:");
-            for sev in &["Critical", "High", "Medium", "Low"] {
-                if let Some(rew) = p.web_rewards.get(*sev) {
-                    println!("  {}: {}", sev, rew);
-                }
+            for sev in &["Critical","High","Medium","Low"] {
+                if let Some(r) = p.web_rewards.get(*sev) { println!("  {}: {}", sev, r); }
             }
         }
     } else if has_modern {
         println!("Bounties (Unified):");
-        for sev in &["Critical", "High", "Medium", "Low"] {
-            if let Some(rew) = p.rewards.get(*sev) {
-                println!("  {}: {}", sev, rew);
-            }
+        for sev in &["Critical","High","Medium","Low"] {
+            if let Some(r) = p.rewards.get(*sev) { println!("  {}: {}", sev, r); }
         }
     }
 }
-
 fn print_scope(p: &Program) {
     if p.github_links.is_empty() && p.onchain_links.is_empty() && !p.has_web_scope {
-        println!("Scope: Not specified");
-        return;
+        println!("Scope: Not specified"); return;
     }
-
     if !p.github_links.is_empty() {
         println!("GitHub: Yes ({} repo(s))", p.github_links.len());
-        for link in &p.github_links {
-            println!("  - {}", link);
-        }
+        for l in &p.github_links { println!("  - {}", l); }
     }
-
     if !p.onchain_links.is_empty() {
         println!("On-Chain: Yes ({} contract(s))", p.onchain_links.len());
-        for link in &p.onchain_links {
-            println!("  - {}", link);
-        }
+        for l in &p.onchain_links { println!("  - {}", l); }
     }
-
-    if p.has_web_scope {
-        println!("Web Scope: Yes");
-    }
-
+    if p.has_web_scope { println!("Web Scope: Yes"); }
     if p.github_links.is_empty() && !p.onchain_links.is_empty() {
         println!("No GitHub — on-chain audit only.");
     }
 }
+
+// ---------------------------------------------------------------------------
+// Constants (unchanged)
+// ---------------------------------------------------------------------------
+const DATA_FILE: &str = "immunefi/immunefi_programs.json";
+const CHANGELOG_FILE: &str = "immunefi/immunefi-changelog.md";

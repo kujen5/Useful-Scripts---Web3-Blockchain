@@ -1,12 +1,92 @@
-   0.107818856s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint: stale: changed "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs"
-   0.107861142s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:           (vs) "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/.fingerprint/fetch-all-active-and-upcoming-audits-contests-d270344e5585e1e0/dep-bin-immunefi"
-   0.107866219s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 1762425071, nanos: 811424436 } < FileTime { seconds: 1762425073, nanos: 984612341 }
-   0.107894304s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint: fingerprint dirty for fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests)/Check { test: false }/TargetInner { name: "immunefi", doc: true, ..: with_path("/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs", Edition2024) }
-   0.107902295s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/.fingerprint/fetch-all-active-and-upcoming-audits-contests-d270344e5585e1e0/dep-bin-immunefi", reference_mtime: FileTime { seconds: 1762425071, nanos: 811424436 }, stale: "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs", stale_mtime: FileTime { seconds: 1762425073, nanos: 984612341 } }))
-   0.108371454s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint: stale: changed "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs"
-   0.108398611s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:           (vs) "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/.fingerprint/fetch-all-active-and-upcoming-audits-contests-583d23516750228d/dep-test-bin-immunefi"
-   0.108403017s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 1762425071, nanos: 811424436 } < FileTime { seconds: 1762425073, nanos: 984612341 }
-   0.108423755s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint: fingerprint dirty for fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests)/Check { test: true }/TargetInner { name: "immunefi", doc: true, ..: with_path("/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs", Edition2024) }
-   0.108430269s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/.fingerprint/fetch-all-active-and-upcoming-audits-contests-583d23516750228d/dep-test-bin-immunefi", reference_mtime: FileTime { seconds: 1762425071, nanos: 811424436 }, stale: "/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs", stale_mtime: FileTime { seconds: 1762425073, nanos: 984612341 } }))
+   0.082909102s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint: fingerprint error for fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests)/Check { test: false }/TargetInner { name: "immunefi", doc: true, ..: with_path("/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs", Edition2024) }
+   0.082944700s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/.fingerprint/fetch-all-active-and-upcoming-audits-contests-c7d871e34201b71e/bin-immunefi`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   6: cargo::ops::cargo_compile::compile_ws
+   7: cargo::ops::cargo_compile::compile_with_exec
+   8: cargo::ops::cargo_compile::compile
+   9: cargo::commands::check::exec
+  10: <cargo::cli::Exec>::exec
+  11: cargo::main
+  12: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  13: std::rt::lang_start::<()>::{closure#0}
+  14: core::ops::function::impls::<impl core::ops::function::FnOnce<A> for &F>::call_once
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/core/src/ops/function.rs:290:21
+  15: std::panicking::catch_unwind::do_call
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:589:40
+  16: std::panicking::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:552:19
+  17: std::panic::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panic.rs:359:14
+  18: std::rt::lang_start_internal::{{closure}}
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/rt.rs:175:24
+  19: std::panicking::catch_unwind::do_call
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:589:40
+  20: std::panicking::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:552:19
+  21: std::panic::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/rt.rs:171:5
+  23: main
+  24: __libc_start_call_main
+             at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+  25: __libc_start_main_impl
+             at ./csu/../csu/libc-start.c:392:3
+  26: <unknown>
+   0.141166333s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint: fingerprint error for fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests)/Check { test: true }/TargetInner { name: "immunefi", doc: true, ..: with_path("/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/src/immunefi.rs", Edition2024) }
+   0.141193808s  INFO prepare_target{force=false package_id=fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests) target="immunefi"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests/target/debug/.fingerprint/fetch-all-active-and-upcoming-audits-contests-acda2b7d59939c1d/test-bin-immunefi`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   6: cargo::ops::cargo_compile::compile_ws
+   7: cargo::ops::cargo_compile::compile_with_exec
+   8: cargo::ops::cargo_compile::compile
+   9: cargo::commands::check::exec
+  10: <cargo::cli::Exec>::exec
+  11: cargo::main
+  12: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  13: std::rt::lang_start::<()>::{closure#0}
+  14: core::ops::function::impls::<impl core::ops::function::FnOnce<A> for &F>::call_once
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/core/src/ops/function.rs:290:21
+  15: std::panicking::catch_unwind::do_call
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:589:40
+  16: std::panicking::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:552:19
+  17: std::panic::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panic.rs:359:14
+  18: std::rt::lang_start_internal::{{closure}}
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/rt.rs:175:24
+  19: std::panicking::catch_unwind::do_call
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:589:40
+  20: std::panicking::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panicking.rs:552:19
+  21: std::panic::catch_unwind
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal
+             at /rustc/1159e78c4747b02ef996e55082b704c09b970588/library/std/src/rt.rs:171:5
+  23: main
+  24: __libc_start_call_main
+             at ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+  25: __libc_start_main_impl
+             at ./csu/../csu/libc-start.c:392:3
+  26: <unknown>
     Checking fetch-all-active-and-upcoming-audits-contests v0.1.0 (/home/kujen/Useful-Scripts---Web3-Blockchain/fetch-all-active-and-upcoming-audits-contests)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.42s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.53s
